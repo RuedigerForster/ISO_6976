@@ -840,10 +840,9 @@ Rcpp::List iso6976_calc(
   double uHmn   = u_Hm_o_N(x, u_x, r_x, kh);
   double uHvg_o = u_Hv_o_G(x, u_x, r_x, kh, ks, Z, p2);
   double uHvn_o = u_Hv_o_N(x, u_x, r_x, kh, ks, Z, p2);
-  // For real-gas volumetric, the standard only gives ideal-gas formulas in
-  // Annex B; u(Hv_G) = u(Hv_o_G) to first order (Z cancels in relative unc.)
-  double uHvg   = uHvg_o;
-  double uHvn   = uHvn_o;
+  // u(H_v,G): same relative uncertainty as u(H_v^o,G) but applied to H_v,G = H_v^o,G/Z
+  double uHvg   = uHvg_o / Z;
+  double uHvn   = uHvn_o / Z;
 
   double uD  = u_D(x, u_x, r_x, ks, Z, D, p2);
   double uG  = u_G(x, u_x, r_x, ks, Z, G, p2);
@@ -851,24 +850,25 @@ Rcpp::List iso6976_calc(
   double uWn = u_W_N(x, u_x, r_x, kh, ks, Z, Wn, p2);
 
   // ---- assemble result ----
-  return Rcpp::List::create(
-    Rcpp::Named("M")       = M,
-    Rcpp::Named("Z")       = Z,
-    Rcpp::Named("G_o")     = G_o,
-    Rcpp::Named("D_o")     = D_o,
-    Rcpp::Named("G")       = G,      Rcpp::Named("u_G")   = k * uG,
-    Rcpp::Named("D")       = D,      Rcpp::Named("u_D")   = k * uD,
-    Rcpp::Named("Hcg")     = Hcg,    Rcpp::Named("u_Hcg") = k * uHcg,
-    Rcpp::Named("Hcn")     = Hcn,    Rcpp::Named("u_Hcn") = k * uHcn,
-    Rcpp::Named("Hmg")     = Hmg,    Rcpp::Named("u_Hmg") = k * uHmg,
-    Rcpp::Named("Hmn")     = Hmn,    Rcpp::Named("u_Hmn") = k * uHmn,
-    Rcpp::Named("Hvg_o")   = Hvg_o,  Rcpp::Named("u_Hvg_o") = k * uHvg_o,
-    Rcpp::Named("Hvn_o")   = Hvn_o,  Rcpp::Named("u_Hvn_o") = k * uHvn_o,
-    Rcpp::Named("Hvg")     = Hvg,    Rcpp::Named("u_Hvg") = k * uHvg,
-    Rcpp::Named("Hvn")     = Hvn,    Rcpp::Named("u_Hvn") = k * uHvn,
-    Rcpp::Named("Wg_o")    = Wg_o,
-    Rcpp::Named("Wn_o")    = Wn_o,
-    Rcpp::Named("Wg")      = Wg,     Rcpp::Named("u_Wg")  = k * uWg,
-    Rcpp::Named("Wn")      = Wn,     Rcpp::Named("u_Wn")  = k * uWn
-  );
+  // (Rcpp::List::create() is limited to 20 args; use named assignment instead)
+  Rcpp::List result;
+  result["M"]      = M;
+  result["Z"]      = Z;
+  result["G_o"]    = G_o;
+  result["D_o"]    = D_o;
+  result["G"]      = G;       result["u_G"]    = k * uG;
+  result["D"]      = D;       result["u_D"]    = k * uD;
+  result["Hcg"]    = Hcg;     result["u_Hcg"]  = k * uHcg;
+  result["Hcn"]    = Hcn;     result["u_Hcn"]  = k * uHcn;
+  result["Hmg"]    = Hmg;     result["u_Hmg"]  = k * uHmg;
+  result["Hmn"]    = Hmn;     result["u_Hmn"]  = k * uHmn;
+  result["Hvg_o"]  = Hvg_o;   result["u_Hvg_o"] = k * uHvg_o;
+  result["Hvn_o"]  = Hvn_o;   result["u_Hvn_o"] = k * uHvn_o;
+  result["Hvg"]    = Hvg;     result["u_Hvg"]  = k * uHvg;
+  result["Hvn"]    = Hvn;     result["u_Hvn"]  = k * uHvn;
+  result["Wg_o"]   = Wg_o;
+  result["Wn_o"]   = Wn_o;
+  result["Wg"]     = Wg;      result["u_Wg"]   = k * uWg;
+  result["Wn"]     = Wn;      result["u_Wn"]   = k * uWn;
+  return result;
 }

@@ -180,3 +180,244 @@ test_that("Example 1 — NCV values finite, positive, and below GCV", {
   expect_lt(res$Hcn, res$Hcg)
   expect_lt(res$Hmn, res$Hmg)
 })
+
+################################################################################
+# componentIndex / componentName / componentNames
+################################################################################
+test_that("componentNames() returns length-60 character vector", {
+  nm <- componentNames()
+  expect_type(nm, "character")
+  expect_length(nm, 60)
+})
+
+test_that("componentIndex returns correct indices for boundary components", {
+  expect_equal(componentIndex("methane"),       1L)
+  expect_equal(componentIndex("ethane"),        2L)
+  expect_equal(componentIndex("nitrogen"),      52L)
+  expect_equal(componentIndex("carbon dioxide"), 54L)
+  expect_equal(componentIndex("n-pentadecane"), 60L)
+})
+
+test_that("componentName returns correct names for boundary indices", {
+  expect_equal(componentName(1L),  "methane")
+  expect_equal(componentName(52L), "nitrogen")
+  expect_equal(componentName(54L), "carbon dioxide")
+  expect_equal(componentName(60L), "n-pentadecane")
+})
+
+test_that("componentIndex / componentName round-trip", {
+  for (i in c(1L, 10L, 30L, 54L, 60L)) {
+    expect_equal(componentIndex(componentName(i)), i)
+  }
+})
+
+test_that("componentIndex errors on unknown name", {
+  expect_error(componentIndex("unobtainium"), "Unknown component")
+})
+
+test_that("componentName errors on out-of-range index", {
+  expect_error(componentName(0L),  "index must be between 1 and 60")
+  expect_error(componentName(61L), "index must be between 1 and 60")
+})
+
+################################################################################
+# GasComponents R6 class — construction and defaults
+################################################################################
+test_that("GasComponents initialises with zeros and identity matrix", {
+  gc <- GasComponents$new()
+  expect_equal(gc$fractions,    numeric(60))
+  expect_equal(gc$uncertainties, numeric(60))
+  expect_equal(gc$correlations,  diag(60))
+})
+
+################################################################################
+# GasComponents — single-component getters/setters by index and by name
+################################################################################
+test_that("setFraction / getFraction work by index and by name", {
+  gc <- GasComponents$new()
+  gc$setFraction(1L, 0.9)
+  expect_equal(gc$getFraction(1L), 0.9)
+  expect_equal(gc$getFraction("methane"), 0.9)
+
+  gc$setFraction("nitrogen", 0.05)
+  expect_equal(gc$getFraction(52L),       0.05)
+  expect_equal(gc$getFraction("nitrogen"), 0.05)
+})
+
+test_that("setUncertainty / getUncertainty work by index and by name", {
+  gc <- GasComponents$new()
+  gc$setUncertainty(1L, 0.001)
+  expect_equal(gc$getUncertainty(1L),       0.001)
+  expect_equal(gc$getUncertainty("methane"), 0.001)
+
+  gc$setUncertainty("carbon dioxide", 0.0005)
+  expect_equal(gc$getUncertainty(54L), 0.0005)
+})
+
+test_that("setCorrelation / getCorrelation are symmetric", {
+  gc <- GasComponents$new()
+  gc$setCorrelation(1L, 2L, 0.3)
+  expect_equal(gc$getCorrelation(1L, 2L), 0.3)
+  expect_equal(gc$getCorrelation(2L, 1L), 0.3)   # symmetry
+  expect_equal(gc$correlations[1, 2],     0.3)
+  expect_equal(gc$correlations[2, 1],     0.3)
+})
+
+################################################################################
+# GasComponents — array setters
+################################################################################
+test_that("setFractionArray accepts length-60 vector", {
+  gc <- GasComponents$new()
+  x  <- rep(0, 60); x[1] <- 0.85; x[52] <- 0.15
+  gc$setFractionArray(x)
+  expect_equal(gc$fractions, x)
+})
+
+test_that("setUncertaintyArray accepts length-60 vector", {
+  gc <- GasComponents$new()
+  u  <- rep(0.001, 60)
+  gc$setUncertaintyArray(u)
+  expect_equal(gc$uncertainties, u)
+})
+
+test_that("setCorrelationMatrix accepts valid 60x60 matrix", {
+  gc <- GasComponents$new()
+  r  <- diag(60); r[1, 2] <- r[2, 1] <- -0.5
+  gc$setCorrelationMatrix(r)
+  expect_equal(gc$correlations[1, 2], -0.5)
+  expect_equal(gc$correlations[2, 1], -0.5)
+})
+
+################################################################################
+# GasComponents — input validation errors
+################################################################################
+test_that("setFractionArray rejects wrong-length input", {
+  gc <- GasComponents$new()
+  expect_error(gc$setFractionArray(numeric(59)), "length 60")
+  expect_error(gc$setFractionArray(numeric(61)), "length 60")
+})
+
+test_that("setUncertaintyArray rejects wrong-length input", {
+  gc <- GasComponents$new()
+  expect_error(gc$setUncertaintyArray(numeric(1)), "length 60")
+})
+
+test_that("setCorrelationMatrix rejects non-matrix and wrong-size inputs", {
+  gc <- GasComponents$new()
+  expect_error(gc$setCorrelationMatrix(numeric(3600)), "60x60 matrix")
+  expect_error(gc$setCorrelationMatrix(matrix(0, 59, 60)), "60x60 matrix")
+})
+
+test_that("setCorrelationMatrix rejects out-of-range coefficients", {
+  gc  <- GasComponents$new()
+  bad <- diag(60); bad[1, 2] <- 1.1
+  expect_error(gc$setCorrelationMatrix(bad), "\\[-1, 1\\]")
+})
+
+test_that(".resolve errors on index out of range", {
+  gc <- GasComponents$new()
+  expect_error(gc$getFraction(0L),  "between 1 and 60")
+  expect_error(gc$getFraction(61L), "between 1 and 60")
+})
+
+test_that(".resolve errors on unknown name", {
+  gc <- GasComponents$new()
+  expect_error(gc$getFraction("unobtainium"), "Unknown component")
+})
+
+################################################################################
+# calculateProperties() — input validation
+################################################################################
+test_that("calculateProperties errors on wrong-length compositionArray", {
+  expect_error(
+    calculateProperties(numeric(59), numeric(60), diag(60)),
+    "length 60"
+  )
+})
+
+test_that("calculateProperties errors on wrong-length uncertaintyArray", {
+  expect_error(
+    calculateProperties(numeric(60), numeric(61), diag(60)),
+    "length 60"
+  )
+})
+
+test_that("calculateProperties errors on non-matrix correlationMatrix", {
+  expect_error(
+    calculateProperties(numeric(60), numeric(60), numeric(3600)),
+    "60x60 matrix"
+  )
+})
+
+test_that("calculateProperties errors on wrong-size correlationMatrix", {
+  expect_error(
+    calculateProperties(numeric(60), numeric(60), matrix(0, 59, 60)),
+    "60x60 matrix"
+  )
+})
+
+test_that("calculateProperties errors on invalid combustionTemperature", {
+  expect_error(
+    calculateProperties(numeric(60), numeric(60), diag(60),
+                        combustionTemperature = 30),
+    "combustionTemperature"
+  )
+})
+
+test_that("calculateProperties errors on invalid volumeTemperature", {
+  expect_error(
+    calculateProperties(numeric(60), numeric(60), diag(60),
+                        volumeTemperature = 10),
+    "volumeTemperature"
+  )
+})
+
+test_that("calculateProperties errors on out-of-range pressure", {
+  expect_error(
+    calculateProperties(numeric(60), numeric(60), diag(60), pressure = 50),
+    "pressure"
+  )
+  expect_error(
+    calculateProperties(numeric(60), numeric(60), diag(60), pressure = 200),
+    "pressure"
+  )
+})
+
+################################################################################
+# calculateProperties() — coverage factor scaling
+################################################################################
+test_that("coverage factor k doubles all uncertainty outputs", {
+  data("example1")
+  r1 <- calculateProperties(fractionArray, uncertaintyArray, correlationMatrix,
+                             combustionTemperature = 15, volumeTemperature = 15,
+                             coverage = 1)
+  r2 <- calculateProperties(fractionArray, uncertaintyArray, correlationMatrix,
+                             combustionTemperature = 15, volumeTemperature = 15,
+                             coverage = 2)
+
+  u_names <- c("u_G", "u_D", "u_Hcg", "u_Hcn", "u_Hmg", "u_Hmn",
+                "u_Hvg_o", "u_Hvn_o", "u_Hvg", "u_Hvn", "u_Wg", "u_Wn")
+  for (nm in u_names) {
+    expect_equal(r2[[nm]], 2 * r1[[nm]], tolerance = 1e-12,
+                 label = paste0("2 * u (k=1) == u (k=2) for ", nm))
+  }
+})
+
+test_that("coverage factor does not affect non-uncertainty outputs", {
+  data("example1")
+  r1 <- calculateProperties(fractionArray, uncertaintyArray, correlationMatrix,
+                             combustionTemperature = 15, volumeTemperature = 15,
+                             coverage = 1)
+  r5 <- calculateProperties(fractionArray, uncertaintyArray, correlationMatrix,
+                             combustionTemperature = 15, volumeTemperature = 15,
+                             coverage = 5)
+
+  det_names <- c("M", "Z", "G_o", "D_o", "G", "D",
+                 "Hcg", "Hcn", "Hmg", "Hmn",
+                 "Hvg_o", "Hvn_o", "Hvg", "Hvn",
+                 "Wg_o", "Wn_o", "Wg", "Wn")
+  for (nm in det_names) {
+    expect_equal(r5[[nm]], r1[[nm]], tolerance = 1e-12,
+                 label = paste0(nm, " unchanged by coverage factor"))
+  }
+})

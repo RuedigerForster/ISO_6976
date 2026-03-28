@@ -2,10 +2,9 @@ Package: ISO6976.2016
 Version: 0.1-0
 Date: 2026-03-28
 Title: Calorific Values and Properties of Natural Gas per ISO 6976:2016
-Authors@R: c(
-    person("Rüdiger", "Forster", role = "aut"),
-    person("Paul", "Lysakowski", role = c("aut", "cre"),
-           email = "paul.lysakowski@pledoc.de"))
+Authors@R:
+    person("Rüdiger", "Forster", role = c("aut", "cre", "mnt"),
+           email = "meticulousmeasurements@gmail.com")
 Depends: R (>= 3.5.0)
 LinkingTo: Rcpp
 Imports: Rcpp (>= 1.0),
