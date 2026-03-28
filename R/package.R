@@ -19,12 +19,11 @@
 #' ISO 6976:2016 "Natural Gas — Calculation of calorific values, density,
 #' relative density and Wobbe indices from composition".
 #'
-#' @author Paul Lysakowski \email{paul.lysakowski@@pledoc.de}
+#' @author Rüdiger Forster \email{meticulousmeasurements@@gmail.com}
 #'
-#' @docType package
 #' @name ISO6976.2016-package
-#' @aliases ISO6976.2016
+#' @aliases ISO6976.2016-package
 #' @useDynLib ISO6976.2016, .registration = TRUE
 #' @importFrom Rcpp evalCpp
 #' @importFrom R6 R6Class
-NULL
+"_PACKAGE"

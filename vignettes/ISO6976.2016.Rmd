@@ -1,0 +1,220 @@
+---
+title: "Natural Gas Properties with ISO6976.2016"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{Natural Gas Properties with ISO6976.2016}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r setup, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment  = "#>"
+)
+library(ISO6976.2016)
+```
+
+## Overview
+
+`ISO6976.2016` implements the calculation method of ISO 6976:2016
+*"Natural Gas — Calculation of calorific values, density, relative density
+and Wobbe indices from composition"*.  Given a gas composition as mole
+fractions, it returns all combustion and volumetric properties together with
+their standard uncertainties, propagated according to Annex B of the standard.
+
+### Properties returned
+
+| Symbol | Description | Unit |
+|--------|-------------|------|
+| `M` | Molar mass | kg/kmol |
+| `Z` | Compression factor | — |
+| `G_o`, `D_o` | Ideal-gas relative density and density | —, kg/m³ |
+| `G`, `u_G` | Real-gas relative density | — |
+| `D`, `u_D` | Real-gas density | kg/m³ |
+| `Hcg`, `u_Hcg` | Molar gross calorific value | kJ/mol |
+| `Hcn`, `u_Hcn` | Molar net calorific value | kJ/mol |
+| `Hmg`, `u_Hmg` | Mass-basis gross calorific value | MJ/kg |
+| `Hmn`, `u_Hmn` | Mass-basis net calorific value | MJ/kg |
+| `Hvg`, `u_Hvg` | Volumetric gross calorific value (real gas) | MJ/m³ |
+| `Hvn`, `u_Hvn` | Volumetric net calorific value (real gas) | MJ/m³ |
+| `Hvg_o`, `Hvn_o` | Ideal-gas volumetric calorific values | MJ/m³ |
+| `Wg`, `u_Wg` | Gross Wobbe index | MJ/m³ |
+| `Wn`, `u_Wn` | Net Wobbe index | MJ/m³ |
+| `Wg_o`, `Wn_o` | Ideal-gas Wobbe indices | MJ/m³ |
+
+Properties with a `u_` prefix are standard uncertainties (*k* = 1) unless
+the `coverage` argument is set to a value other than 1.
+
+## Application limits
+
+The calculation is valid only within the limits defined in ISO 6976:2016 §5:
+
+* **Combustion temperature** (`combustionTemperature`): 0, 15, 15.55, 20, or 25 °C
+* **Volume reference temperature** (`volumeTemperature`): 0, 15, 15.55, or 20 °C
+* **Reference pressure** (`pressure`): 90–110 kPa (default 101.325 kPa)
+* The compression factor *Z* must exceed 0.9
+
+## Quick start
+
+The simplest way to provide a composition is to construct a numeric vector of
+length 60 in the component order of ISO 6976:2016 Table A.2
+(use `componentNames()` to see the full list):
+
+```{r quickstart}
+x   <- numeric(60)   # all zeros
+u_x <- numeric(60)   # all zero uncertainties
+r_x <- diag(60)      # identity correlation matrix (no correlations)
+
+# Fill in a simple two-component mixture: 95 % methane, 5 % nitrogen
+x[componentIndex("methane")]  <- 0.95
+x[componentIndex("nitrogen")] <- 0.05
+
+# Assign standard uncertainties (0.05 mol/mol each)
+u_x[componentIndex("methane")]  <- 0.0005
+u_x[componentIndex("nitrogen")] <- 0.0005
+
+res <- calculateProperties(x, u_x, r_x,
+                           combustionTemperature = 25,
+                           volumeTemperature     = 15)
+
+cat("Molar mass              :", round(res$M,   4), "kg/kmol\n")
+cat("Compression factor Z    :", round(res$Z,   6), "\n")
+cat("Gross CV (volumetric)   :", round(res$Hvg, 4), "MJ/m³\n")
+cat("  standard uncertainty  :", round(res$u_Hvg, 6), "MJ/m³\n")
+cat("Gross Wobbe index       :", round(res$Wg,  4), "MJ/m³\n")
+cat("  standard uncertainty  :", round(res$u_Wg, 6), "MJ/m³\n")
+```
+
+## Using the GasComponents class
+
+For applications that build a composition incrementally — for example when
+reading chromatograph results component by component — the `GasComponents` R6
+class provides named getters and setters:
+
+```{r gascomponents}
+gc <- GasComponents$new()
+
+# Set fractions by name or by index
+gc$setFraction("methane",  0.9234)
+gc$setFraction("ethane",   0.0254)
+gc$setFraction("propane",  0.0152)
+gc$setFraction("nitrogen", 0.0103)
+gc$setFraction("carbon dioxide", 0.0154)
+gc$setFraction(1L, 0.9234)   # same as "methane"
+
+# Set uncertainties
+gc$setUncertainty("methane",        0.000332)
+gc$setUncertainty("ethane",         0.000243)
+gc$setUncertainty("propane",        0.000148)
+gc$setUncertainty("nitrogen",       0.000195)
+gc$setUncertainty("carbon dioxide", 0.000111)
+
+# Retrieve a value
+gc$getFraction("methane")
+
+# Pass directly to calculateProperties
+res <- calculateProperties(gc$fractions, gc$uncertainties, gc$correlations,
+                           combustionTemperature = 15,
+                           volumeTemperature     = 15)
+round(res$Hvg, 4)   # real-gas vol. gross CV [MJ/m³]
+```
+
+### Setting correlations
+
+When a GC calibration provides a full covariance matrix, use
+`setCorrelationMatrix()` or `setCorrelation()` for individual pairs:
+
+```{r correlations}
+gc2 <- GasComponents$new()
+gc2$setFractionArray(gc$fractions)
+gc2$setUncertaintyArray(gc$uncertainties)
+
+# Negative correlation between methane and ethane (typical for GC)
+gc2$setCorrelation("methane", "ethane", -0.65)
+gc2$getCorrelation("methane", "ethane")
+gc2$getCorrelation("ethane", "methane")   # automatically symmetric
+```
+
+## Reference conditions
+
+ISO 6976:2016 defines properties at specified reference temperatures and a
+reference pressure.  The package supports all temperature combinations in
+the standard:
+
+```{r refconds}
+data("example3")
+
+# German/European standard: 25 °C combustion, 0 °C metering
+r25_0 <- calculateProperties(fractionArray, uncertaintyArray, correlationMatrix,
+                             combustionTemperature = 25,
+                             volumeTemperature     = 0)
+
+# UK/legacy standard: 15 °C / 15 °C
+r15_15 <- calculateProperties(fractionArray, uncertaintyArray, correlationMatrix,
+                              combustionTemperature = 15,
+                              volumeTemperature     = 15)
+
+cat("Hvg at 25/0 °C  :", round(r25_0$Hvg,  5), "MJ/m³\n")
+cat("Hvg at 15/15 °C :", round(r15_15$Hvg, 5), "MJ/m³\n")
+```
+
+## Uncertainty and coverage factor
+
+All `u_` outputs are standard uncertainties (*k* = 1) by default.  For
+expanded uncertainties at a given confidence level, set `coverage = 2`
+(approximately 95 % for a normal distribution):
+
+```{r coverage}
+data("example1")
+
+r_k1 <- calculateProperties(fractionArray, uncertaintyArray, correlationMatrix,
+                             combustionTemperature = 15, volumeTemperature = 15,
+                             coverage = 1)
+r_k2 <- calculateProperties(fractionArray, uncertaintyArray, correlationMatrix,
+                             combustionTemperature = 15, volumeTemperature = 15,
+                             coverage = 2)
+
+cat("Gross Wobbe index :", round(r_k1$Wg, 5), "MJ/m³\n")
+cat("  u (k=1)         :", round(r_k1$u_Wg, 6), "MJ/m³\n")
+cat("  U (k=2, ~95%)   :", round(r_k2$u_Wg, 6), "MJ/m³\n")
+```
+
+## Verification against ISO 6976:2016 Annex D
+
+The package ships with the four reference datasets from Annex D of the
+standard.  The results below reproduce Table D.2 of ISO 6976:2016.
+
+```{r annex_d}
+data("example1")
+res <- calculateProperties(fractionArray, uncertaintyArray, correlationMatrix,
+                           combustionTemperature = 15,
+                           volumeTemperature     = 15,
+                           coverage              = 1)
+
+tab <- data.frame(
+  Property = c("M [kg/kmol]", "Z", "Hcg [kJ/mol]", "u(Hcg)",
+               "Hmg [MJ/kg]", "u(Hmg)", "Hvg [MJ/m\u00b3]", "u(Hvg)"),
+  Computed = round(c(res$M,     res$Z,     res$Hcg,   res$u_Hcg,
+                     res$Hmg,   res$u_Hmg, res$Hvg,   res$u_Hvg), 7),
+  ISO_6976 = c(17.3884301, 0.99776224, 906.1799588, 0.615609872,
+               52.113961,  0.024301,   38.410611,   0.026267)
+)
+knitr::kable(tab, align = "lrr")
+```
+
+## Component reference
+
+```{r components}
+# All 60 components in table order
+nms <- componentNames()
+cat(paste(sprintf("%2d  %s", seq_along(nms), nms), collapse = "\n"), "\n")
+```
+
+## Further reading
+
+* ISO 6976:2016 — the primary reference for all formulas, constants,
+  and application limits.
+* `?calculateProperties` — full parameter documentation and output table.
+* `?GasComponents` — R6 class reference.
+* `?example1` through `?example3_ex` — dataset documentation.

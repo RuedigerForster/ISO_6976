@@ -1,55 +1,50 @@
-#' Example 1 from ISO 6976:2016 Annex D.2
+#' ISO 6976:2016 Annex D.2 — Example 1 (5-component mixture, 15/15 °C)
 #'
-#' A simple five-component mixture at 15/15 °C.  Used as the primary
-#' reference case for testing the calculation engine.
+#' A five-component natural gas mixture from Annex D.2 of ISO 6976:2016.
+#' Non-zero components: methane, ethane, propane, nitrogen, carbon dioxide.
 #'
-#' @format Three objects are loaded:
+#' @format Three objects are loaded into the calling environment:
 #' \describe{
 #'   \item{fractionArray}{Numeric vector (length 60) of mole fractions [mol/mol].}
-#'   \item{uncertaintyArray}{Numeric vector (length 60) of standard uncertainties.}
-#'   \item{correlationMatrix}{60x60 identity correlation matrix.}
+#'   \item{uncertaintyArray}{Numeric vector (length 60) of standard uncertainties [mol/mol].}
+#'   \item{correlationMatrix}{60×60 identity correlation matrix.}
 #' }
-#' @source ISO 6976:2016, Annex D, Example 1 (Table D.2).
-#' @examples
-#' data("example1")
-#' res <- calculateProperties(fractionArray, uncertaintyArray, correlationMatrix,
-#'                            combustionTemperature = 15, volumeTemperature = 15)
-"example1"
+#' @source ISO 6976:2016 Annex D.2, Table D.2.
+#' @docType data
+#' @name example1
+NULL
 
-#' Example 2 from ISO 6976:2016 Annex D.3
+#' ISO 6976:2016 Annex D.3 — Example 2 (mixture with water vapour, 15.55/15.55 °C)
 #'
-#' A mixture containing water vapour, at 15.55/15.55 °C.
+#' An eleven-component natural gas mixture including water vapour from
+#' Annex D.3 of ISO 6976:2016.
 #'
 #' @format Three objects are loaded (same structure as \code{\link{example1}}).
-#' @source ISO 6976:2016, Annex D, Example 2 (Table D.3).
-#' @examples
-#' data("example2")
-#' res <- calculateProperties(fractionArray, uncertaintyArray, correlationMatrix,
-#'                            combustionTemperature = 15.55,
-#'                            volumeTemperature = 15.55)
-"example2"
+#' @source ISO 6976:2016 Annex D.3, Table D.3.
+#' @docType data
+#' @name example2
+NULL
 
-#' Example 3 from ISO 6976:2016 Annex D — identity correlation matrix
+#' ISO 6976:2016 Annex D — Example 3 (11-component mixture, identity matrix)
 #'
-#' An 11-component mixture with an identity (uncorrelated) correlation matrix.
+#' An eleven-component natural gas mixture from Annex D of ISO 6976:2016
+#' with an identity correlation matrix (no inter-component correlations).
+#' Used to verify calculations at 15/15 °C and 25/0 °C.
 #'
 #' @format Three objects are loaded (same structure as \code{\link{example1}}).
-#' @source ISO 6976:2016, Annex D, Example 3.
-#' @examples
-#' data("example3")
-#' res <- calculateProperties(fractionArray, uncertaintyArray, correlationMatrix,
-#'                            combustionTemperature = 15, volumeTemperature = 15)
-"example3"
+#' @source ISO 6976:2016 Annex D.
+#' @docType data
+#' @name example3
+NULL
 
-#' Example 3 from ISO 6976:2016 Annex D — full correlation matrix
+#' ISO 6976:2016 Annex D — Example 3, full correlation matrix
 #'
-#' The same 11-component mixture as \code{\link{example3}} but with a full
-#' (non-identity) correlation matrix between components.
+#' The same eleven-component mixture as \code{\link{example3}} but with a full
+#' inter-component correlation matrix from a GC calibration covariance analysis,
+#' as given in Annex D of ISO 6976:2016.
 #'
 #' @format Three objects are loaded (same structure as \code{\link{example1}}).
-#' @source ISO 6976:2016, Annex D, Example 3 (extended case).
-#' @examples
-#' data("example3_ex")
-#' res <- calculateProperties(fractionArray, uncertaintyArray, correlationMatrix,
-#'                            combustionTemperature = 15, volumeTemperature = 15)
-"example3_ex"
+#' @source ISO 6976:2016 Annex D (extended correlation case).
+#' @docType data
+#' @name example3_ex
+NULL
