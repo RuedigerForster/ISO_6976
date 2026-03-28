@@ -8,7 +8,7 @@
 src/*.o
 src/*.so
 src/*.dll
-/ISO6976.Rcheck/
+/ISO6976.2016.Rcheck/
 *.tar.gz
 *.zip
 

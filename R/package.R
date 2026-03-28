@@ -1,4 +1,4 @@
-#' ISO6976: Calorific Values and Properties of Natural Gas per ISO 6976:2016
+#' ISO6976.2016: Calorific Values and Properties of Natural Gas per ISO 6976:2016
 #'
 #' Calculates calorific values (gross and net, molar, mass and volumetric
 #' bases), density, relative density, and Wobbe indices together with their
@@ -22,9 +22,9 @@
 #' @author Paul Lysakowski \email{paul.lysakowski@@pledoc.de}
 #'
 #' @docType package
-#' @name ISO6976-package
-#' @aliases ISO6976
-#' @useDynLib ISO6976, .registration = TRUE
+#' @name ISO6976.2016-package
+#' @aliases ISO6976.2016
+#' @useDynLib ISO6976.2016, .registration = TRUE
 #' @importFrom Rcpp evalCpp
 #' @importFrom R6 R6Class
 NULL
