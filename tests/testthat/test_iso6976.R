@@ -1,7 +1,7 @@
 # Tests against the worked examples in Annex D of ISO 6976:2016
 # All expected values are taken directly from the standard.
 
-library(ISO.6976)
+library(ISO6976)
 
 ################################################################################
 # Example 1 (Annex D.2): 5-component mixture, 15/15 °C
