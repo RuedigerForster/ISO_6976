@@ -1,0 +1,16 @@
+# R build artefacts
+*.o
+*.so
+*.dll
+*.Rhistory
+/.RData
+*.Rproj.user
+src/*.o
+src/*.so
+src/*.dll
+/ISO_6976.Rcheck/
+*.tar.gz
+*.zip
+
+# RStudio
+.Rproj.user/
