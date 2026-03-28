@@ -94,28 +94,25 @@ test_that("Example 3 — identity matrix, 25/0 °C", {
 
 ################################################################################
 # Example 3, full correlation matrix, 15/15 °C
-# Note: uncertainty values in the standard contain errors (factor-of-2 issue);
-# expected values below are corrected (k = 2 applied externally).
 ################################################################################
 test_that("Example 3 — full correlation matrix, 15/15 °C", {
   data("example3_ex")
-  k   <- 2
   res <- calculateProperties(fractionArray, uncertaintyArray, correlationMatrix,
                              combustionTemperature = 15,
                              volumeTemperature = 15)
 
-  expect_equal(res$Hvg,         39.73351, tolerance = 1e-5)
-  expect_equal(res$u_Hvg * k,    0.016316, tolerance = 1e-6)
-  expect_equal(res$Hvn,         35.86811, tolerance = 1e-5)
-  expect_equal(res$u_Hvn * k,    0.015305, tolerance = 1e-6)
-  expect_equal(res$D,            0.76462,  tolerance = 1e-5)
-  expect_equal(res$u_D  * k,     0.000277, tolerance = 1e-6)
-  expect_equal(res$G,            0.62391,  tolerance = 1e-5)
-  expect_equal(res$u_G  * k,     0.000478, tolerance = 1e-3)
-  expect_equal(res$Wg,          50.30318,  tolerance = 1e-5)
-  expect_equal(res$u_Wg * k,     0.019823, tolerance = 1e-6)
-  expect_equal(res$Wn,          45.40954,  tolerance = 1e-5)
-  expect_equal(res$u_Wn * k,     0.018498, tolerance = 1e-6)
+  expect_equal(res$Hvg,    39.73351, tolerance = 1e-5)
+  expect_equal(res$u_Hvg,   0.016316, tolerance = 1e-6)
+  expect_equal(res$Hvn,    35.86811, tolerance = 1e-5)
+  expect_equal(res$u_Hvn,   0.015305, tolerance = 1e-6)
+  expect_equal(res$D,       0.76462,  tolerance = 1e-5)
+  expect_equal(res$u_D,     0.000277, tolerance = 1e-6)
+  expect_equal(res$G,       0.62391,  tolerance = 1e-5)
+  expect_equal(res$u_G,     0.000226, tolerance = 1e-6)
+  expect_equal(res$Wg,     50.30318,  tolerance = 1e-5)
+  expect_equal(res$u_Wg,    0.019823, tolerance = 1e-6)
+  expect_equal(res$Wn,     45.40954,  tolerance = 1e-5)
+  expect_equal(res$u_Wn,    0.018498, tolerance = 1e-6)
 })
 
 ################################################################################
