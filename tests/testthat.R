@@ -1,3 +1,3 @@
 library(testthat)
-library(ISO_6976)
-test_check("ISO_6976")
+library(ISO.6976)
+test_check("ISO.6976")
