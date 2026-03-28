@@ -1,0 +1,12 @@
+linters: linters_with_defaults(
+    # Public API uses camelCase to match ISO 6976:2016 terminology
+    object_name_linter = object_name_linter(
+      styles = c("snake_case", "camelCase")
+    ),
+    # Scientific tables in roxygen docs cannot fit in 80 characters
+    line_length_linter = line_length_linter(length = 120L),
+    # Inline formula comments (e.g. # G_o = M/M_air) are explanatory, not dead code
+    commented_code_linter = NULL,
+    # Long argument lists cause unavoidable hanging-indent discrepancies
+    indentation_linter = NULL
+  )

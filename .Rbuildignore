@@ -3,3 +3,8 @@
 ^.*\.Rproj$
 ^\.Rproj\.user$
 ^ISO6976.2016\.Rcheck$
+^doc$
+^Meta$
+^\.github$
+^\.lintr$
+^docs$

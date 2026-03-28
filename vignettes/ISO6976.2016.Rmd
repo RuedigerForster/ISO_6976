@@ -143,15 +143,17 @@ reference pressure.  The package supports all temperature combinations in
 the standard:
 
 ```{r refconds}
-data("example3")
+data("example3", envir = environment())
 
 # German/European standard: 25 °C combustion, 0 °C metering
-r25_0 <- calculateProperties(fractionArray, uncertaintyArray, correlationMatrix,
+r25_0 <- calculateProperties(example3$fractionArray, example3$uncertaintyArray,
+                             example3$correlationMatrix,
                              combustionTemperature = 25,
                              volumeTemperature     = 0)
 
 # UK/legacy standard: 15 °C / 15 °C
-r15_15 <- calculateProperties(fractionArray, uncertaintyArray, correlationMatrix,
+r15_15 <- calculateProperties(example3$fractionArray, example3$uncertaintyArray,
+                              example3$correlationMatrix,
                               combustionTemperature = 15,
                               volumeTemperature     = 15)
 
@@ -166,12 +168,14 @@ expanded uncertainties at a given confidence level, set `coverage = 2`
 (approximately 95 % for a normal distribution):
 
 ```{r coverage}
-data("example1")
+data("example1", envir = environment())
 
-r_k1 <- calculateProperties(fractionArray, uncertaintyArray, correlationMatrix,
+r_k1 <- calculateProperties(example1$fractionArray, example1$uncertaintyArray,
+                             example1$correlationMatrix,
                              combustionTemperature = 15, volumeTemperature = 15,
                              coverage = 1)
-r_k2 <- calculateProperties(fractionArray, uncertaintyArray, correlationMatrix,
+r_k2 <- calculateProperties(example1$fractionArray, example1$uncertaintyArray,
+                             example1$correlationMatrix,
                              combustionTemperature = 15, volumeTemperature = 15,
                              coverage = 2)
 
@@ -186,8 +190,9 @@ The package ships with the four reference datasets from Annex D of the
 standard.  The results below reproduce Table D.2 of ISO 6976:2016.
 
 ```{r annex_d}
-data("example1")
-res <- calculateProperties(fractionArray, uncertaintyArray, correlationMatrix,
+data("example1", envir = environment())
+res <- calculateProperties(example1$fractionArray, example1$uncertaintyArray,
+                           example1$correlationMatrix,
                            combustionTemperature = 15,
                            volumeTemperature     = 15,
                            coverage              = 1)

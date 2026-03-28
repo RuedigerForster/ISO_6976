@@ -7,8 +7,8 @@ library(ISO6976.2016)
 # Example 1 (Annex D.2): 5-component mixture, 15/15 °C
 ################################################################################
 test_that("Example 1 — 15/15 °C: molar mass, Z, molar GCV, mass GCV, vol. GCV", {
-  data("example1")
-  res <- calculateProperties(fractionArray, uncertaintyArray, correlationMatrix,
+  data("example1", envir = environment())
+  res <- calculateProperties(example1$fractionArray, example1$uncertaintyArray, example1$correlationMatrix,
                              combustionTemperature = 15,
                              volumeTemperature = 15,
                              coverage = 1)
@@ -28,8 +28,8 @@ test_that("Example 1 — 15/15 °C: molar mass, Z, molar GCV, mass GCV, vol. GCV
 # Known mismatch vs. standard for Z: -1.78e-5
 ################################################################################
 test_that("Example 2 — 15.55/15.55 °C (water vapour)", {
-  data("example2")
-  res <- calculateProperties(fractionArray, uncertaintyArray, correlationMatrix,
+  data("example2", envir = environment())
+  res <- calculateProperties(example2$fractionArray, example2$uncertaintyArray, example2$correlationMatrix,
                              combustionTemperature = 15.55,
                              volumeTemperature = 15.55,
                              coverage = 1)
@@ -48,8 +48,8 @@ test_that("Example 2 — 15.55/15.55 °C (water vapour)", {
 # Example 3 (Annex D): 11-component mixture, identity matrix, 15/15 °C
 ################################################################################
 test_that("Example 3 — identity matrix, 15/15 °C", {
-  data("example3")
-  res <- calculateProperties(fractionArray, uncertaintyArray, correlationMatrix,
+  data("example3", envir = environment())
+  res <- calculateProperties(example3$fractionArray, example3$uncertaintyArray, example3$correlationMatrix,
                              combustionTemperature = 15,
                              volumeTemperature = 15,
                              coverage = 1)
@@ -72,8 +72,8 @@ test_that("Example 3 — identity matrix, 15/15 °C", {
 # Example 3, identity matrix, 25/0 °C
 ################################################################################
 test_that("Example 3 — identity matrix, 25/0 °C", {
-  data("example3")
-  res <- calculateProperties(fractionArray, uncertaintyArray, correlationMatrix,
+  data("example3", envir = environment())
+  res <- calculateProperties(example3$fractionArray, example3$uncertaintyArray, example3$correlationMatrix,
                              combustionTemperature = 25,
                              volumeTemperature = 0,
                              coverage = 1)
@@ -96,8 +96,8 @@ test_that("Example 3 — identity matrix, 25/0 °C", {
 # Example 3, full correlation matrix, 15/15 °C
 ################################################################################
 test_that("Example 3 — full correlation matrix, 15/15 °C", {
-  data("example3_ex")
-  res <- calculateProperties(fractionArray, uncertaintyArray, correlationMatrix,
+  data("example3_ex", envir = environment())
+  res <- calculateProperties(example3_ex$fractionArray, example3_ex$uncertaintyArray, example3_ex$correlationMatrix,
                              combustionTemperature = 15,
                              volumeTemperature = 15)
 
@@ -119,8 +119,8 @@ test_that("Example 3 — full correlation matrix, 15/15 °C", {
 # Example 3, full correlation matrix, 25/0 °C
 ################################################################################
 test_that("Example 3 — full correlation matrix, 25/0 °C", {
-  data("example3_ex")
-  res <- calculateProperties(fractionArray, uncertaintyArray, correlationMatrix,
+  data("example3_ex", envir = environment())
+  res <- calculateProperties(example3_ex$fractionArray, example3_ex$uncertaintyArray, example3_ex$correlationMatrix,
                              combustionTemperature = 25,
                              volumeTemperature = 0,
                              coverage = 1)
@@ -144,28 +144,46 @@ test_that("Example 3 — full correlation matrix, 25/0 °C", {
 # Verifies internal consistency of the ideal-gas properties.
 ################################################################################
 test_that("Example 3 — ideal-gas property relationships", {
-  data("example3")
-  res <- calculateProperties(fractionArray, uncertaintyArray, correlationMatrix,
+  data("example3", envir = environment())
+  res <- calculateProperties(example3$fractionArray, example3$uncertaintyArray, example3$correlationMatrix,
                              combustionTemperature = 15,
                              volumeTemperature = 15,
                              coverage = 1)
 
-  Z_air_15 <- 0.999595   # Table A.1
+  expect_equal(res$G_o, res$M / 28.96546,           tolerance = 1e-9)  # G_o = M/M_air
+  expect_equal(res$D_o, res$D * res$Z,               tolerance = 1e-6)  # D_o = D * Z
+  expect_equal(res$Hvg_o, res$Hvg * res$Z,           tolerance = 1e-6)  # Hv_o = Hv * Z
+  expect_equal(res$Hvn_o, res$Hvn * res$Z,           tolerance = 1e-6)
+  expect_equal(res$Wg_o, res$Hvg_o / sqrt(res$G_o),  tolerance = 1e-6)
+  expect_equal(res$Wn_o, res$Hvn_o / sqrt(res$G_o),  tolerance = 1e-6)
+})
 
-  expect_equal(res$G_o, res$M / 28.96546,         tolerance = 1e-9)  # G_o = M/M_air
-  expect_equal(res$D_o, res$D * res$Z,             tolerance = 1e-6)  # D_o = D * Z
-  expect_equal(res$Hvg_o, res$Hvg * res$Z,         tolerance = 1e-6)  # Hv_o = Hv * Z
-  expect_equal(res$Hvn_o, res$Hvn * res$Z,         tolerance = 1e-6)
-  expect_equal(res$Wg_o, res$Hvg_o / sqrt(res$G_o), tolerance = 1e-6)
-  expect_equal(res$Wn_o, res$Hvn_o / sqrt(res$G_o), tolerance = 1e-6)
+################################################################################
+# Ideal-gas uncertainty checks (Example 1, 15/15 °C)
+# u_Hvg_o and u_Hvn_o are not tabulated in ISO 6976:2016 Annex D.
+# The standard states Hv = Hv_o / Z, so u(Hv) = u(Hv_o) / Z, giving
+# u(Hv_o) = u(Hv) * Z.  We verify this structural identity and that the
+# values are positive.
+################################################################################
+test_that("Example 1 — ideal-gas CV uncertainty structural identity", {
+  data("example1", envir = environment())
+  res <- calculateProperties(example1$fractionArray, example1$uncertaintyArray,
+                             example1$correlationMatrix,
+                             combustionTemperature = 15, volumeTemperature = 15,
+                             coverage = 1)
+
+  expect_equal(res$u_Hvg_o, res$u_Hvg * res$Z, tolerance = 1e-9)
+  expect_equal(res$u_Hvn_o, res$u_Hvn * res$Z, tolerance = 1e-9)
+  expect_true(res$u_Hvg_o > 0)
+  expect_true(res$u_Hvn_o > 0)
 })
 
 ################################################################################
 # NCV sanity checks (Example 1, 15/15 °C)
 ################################################################################
 test_that("Example 1 — NCV values finite, positive, and below GCV", {
-  data("example1")
-  res <- calculateProperties(fractionArray, uncertaintyArray, correlationMatrix,
+  data("example1", envir = environment())
+  res <- calculateProperties(example1$fractionArray, example1$uncertaintyArray, example1$correlationMatrix,
                              combustionTemperature = 15,
                              volumeTemperature = 15,
                              coverage = 1)
@@ -265,7 +283,9 @@ test_that("setCorrelation / getCorrelation are symmetric", {
 ################################################################################
 test_that("setFractionArray accepts length-60 vector", {
   gc <- GasComponents$new()
-  x  <- rep(0, 60); x[1] <- 0.85; x[52] <- 0.15
+  x <- rep(0, 60)
+  x[1] <- 0.85
+  x[52] <- 0.15
   gc$setFractionArray(x)
   expect_equal(gc$fractions, x)
 })
@@ -279,7 +299,8 @@ test_that("setUncertaintyArray accepts length-60 vector", {
 
 test_that("setCorrelationMatrix accepts valid 60x60 matrix", {
   gc <- GasComponents$new()
-  r  <- diag(60); r[1, 2] <- r[2, 1] <- -0.5
+  r <- diag(60)
+  r[1, 2] <- r[2, 1] <- -0.5
   gc$setCorrelationMatrix(r)
   expect_equal(gc$correlations[1, 2], -0.5)
   expect_equal(gc$correlations[2, 1], -0.5)
@@ -307,7 +328,8 @@ test_that("setCorrelationMatrix rejects non-matrix and wrong-size inputs", {
 
 test_that("setCorrelationMatrix rejects out-of-range coefficients", {
   gc  <- GasComponents$new()
-  bad <- diag(60); bad[1, 2] <- 1.1
+  bad <- diag(60)
+  bad[1, 2] <- 1.1
   expect_error(gc$setCorrelationMatrix(bad), "\\[-1, 1\\]")
 })
 
@@ -384,11 +406,11 @@ test_that("calculateProperties errors on out-of-range pressure", {
 # calculateProperties() — coverage factor scaling
 ################################################################################
 test_that("coverage factor k doubles all uncertainty outputs", {
-  data("example1")
-  r1 <- calculateProperties(fractionArray, uncertaintyArray, correlationMatrix,
+  data("example1", envir = environment())
+  r1 <- calculateProperties(example1$fractionArray, example1$uncertaintyArray, example1$correlationMatrix,
                              combustionTemperature = 15, volumeTemperature = 15,
                              coverage = 1)
-  r2 <- calculateProperties(fractionArray, uncertaintyArray, correlationMatrix,
+  r2 <- calculateProperties(example1$fractionArray, example1$uncertaintyArray, example1$correlationMatrix,
                              combustionTemperature = 15, volumeTemperature = 15,
                              coverage = 2)
 
@@ -401,11 +423,11 @@ test_that("coverage factor k doubles all uncertainty outputs", {
 })
 
 test_that("coverage factor does not affect non-uncertainty outputs", {
-  data("example1")
-  r1 <- calculateProperties(fractionArray, uncertaintyArray, correlationMatrix,
+  data("example1", envir = environment())
+  r1 <- calculateProperties(example1$fractionArray, example1$uncertaintyArray, example1$correlationMatrix,
                              combustionTemperature = 15, volumeTemperature = 15,
                              coverage = 1)
-  r5 <- calculateProperties(fractionArray, uncertaintyArray, correlationMatrix,
+  r5 <- calculateProperties(example1$fractionArray, example1$uncertaintyArray, example1$correlationMatrix,
                              combustionTemperature = 15, volumeTemperature = 15,
                              coverage = 5)
 

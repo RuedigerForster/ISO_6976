@@ -72,7 +72,8 @@ of its Annex B.
 \examples{
 \dontrun{
 data("example1")
-res <- calculateProperties(fractionArray, uncertaintyArray, correlationMatrix,
+res <- calculateProperties(example1$fractionArray, example1$uncertaintyArray,
+                           example1$correlationMatrix,
                            combustionTemperature = 15, volumeTemperature = 15)
 res$M      # molar mass [kg/kmol]
 res$Hvg    # real-gas vol. gross CV [MJ/m^3]

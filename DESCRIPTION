@@ -10,11 +10,11 @@ LinkingTo: Rcpp
 Imports: Rcpp (>= 1.0),
          R6
 Suggests: knitr,
+          lintr,
           rmarkdown,
           testthat (>= 3.0.0)
 Encoding: UTF-8
-LazyData: true
-LazyDataCompression: bzip2
+LazyData: false
 ByteCompile: true
 Description: Calculates calorific values (gross and net), density, relative
     density, and Wobbe indices together with their standard uncertainties from

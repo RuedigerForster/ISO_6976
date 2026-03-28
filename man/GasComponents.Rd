@@ -30,6 +30,7 @@ ISO 6976:2016 Table A.2) or by English name (see \code{\link{componentNames}}).
 \section{Methods}{
 \subsection{Public methods}{
 \itemize{
+\item \href{#method-GasComponents-new}{\code{GasComponents$new()}}
 \item \href{#method-GasComponents-getFraction}{\code{GasComponents$getFraction()}}
 \item \href{#method-GasComponents-getUncertainty}{\code{GasComponents$getUncertainty()}}
 \item \href{#method-GasComponents-getCorrelation}{\code{GasComponents$getCorrelation()}}
@@ -41,6 +42,18 @@ ISO 6976:2016 Table A.2) or by English name (see \code{\link{componentNames}}).
 \item \href{#method-GasComponents-setCorrelationMatrix}{\code{GasComponents$setCorrelationMatrix()}}
 \item \href{#method-GasComponents-clone}{\code{GasComponents$clone()}}
 }
+}
+\if{html}{\out{<hr>}}
+\if{html}{\out{<a id="method-GasComponents-new"></a>}}
+\if{latex}{\out{\hypertarget{method-GasComponents-new}{}}}
+\subsection{Method \code{new()}}{
+Create a new GasComponents object.
+Initialises fractions and uncertainties to zero and correlations to the
+60x60 identity matrix.
+\subsection{Usage}{
+\if{html}{\out{<div class="r">}}\preformatted{GasComponents$new()}\if{html}{\out{</div>}}
+}
+
 }
 \if{html}{\out{<hr>}}
 \if{html}{\out{<a id="method-GasComponents-getFraction"></a>}}

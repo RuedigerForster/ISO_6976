@@ -7,7 +7,7 @@
 // Formula numbers in comments refer to ISO 6976:2016.
 // Annex B formula numbers refer to the uncertainty propagation annex.
 //
-// Copyright (C) 2026 Paul Lysakowski
+// Copyright (C) 2026 Rüdiger Forster
 // SPDX-License-Identifier: GPL-3.0-or-later
 
 #include <cmath>

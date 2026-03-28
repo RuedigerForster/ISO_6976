@@ -11,8 +11,8 @@
   "n-hexane",          #  9
   "2-methylpentane",   # 10
   "3-methylpentane",   # 11
-  "2,2-dimethylbutane",# 12
-  "2,3-dimethylbutane",# 13
+  "2,2-dimethylbutane", # 12
+  "2,3-dimethylbutane", # 13
   "n-heptane",         # 14
   "n-octane",          # 15
   "n-nonane",          # 16
@@ -29,7 +29,7 @@
   "1,3-butadiene",     # 27
   "acetylene",         # 28
   "cyclopentane",      # 29
-  "methylcyclopentane",# 30
+  "methylcyclopentane", # 30
   "ethylcyclopentane", # 31
   "cyclohexane",       # 32
   "methylcyclohexane", # 33
