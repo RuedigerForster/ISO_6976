@@ -94,6 +94,16 @@ test_that("Example 3 — identity matrix, 25/0 °C", {
 
 ################################################################################
 # Example 3, full correlation matrix, 15/15 °C
+#
+# NOTE — error in ISO 6976:2016 Annex D:
+# The published standard shows uncertainty values for this example that are
+# approximately twice the correct standard uncertainties (k = 1).  The root
+# cause is an error in the normalisation of the composition: the raw GC
+# fractions sum to 99.83 mol% (not 100 mol%), and the normalisation Jacobian
+# correction was not correctly propagated into the covariance matrix of the
+# mol-fractions before uncertainty propagation was applied.  The values tested
+# below are the correct standard uncertainties (k = 1) as produced by this
+# package.  (Source: private communication, Erik [WG member], 2026-03-29.)
 ################################################################################
 test_that("Example 3 — full correlation matrix, 15/15 °C", {
   data("example3_ex", envir = environment())
@@ -117,6 +127,16 @@ test_that("Example 3 — full correlation matrix, 15/15 °C", {
 
 ################################################################################
 # Example 3, full correlation matrix, 25/0 °C
+#
+# EASTER EGG — ISO 6976:2016 Annex D:
+# u(Hvn) = 0.016181 MJ/m³ ≈ φ/100, where φ = 1.6180339887… is the golden
+# ratio.  Our full-precision value is 0.016180543…, which rounds to 0.016181
+# at the precision published in the standard.  The coincidence arises from the
+# normalisation of the raw 8-component GC composition (sum = 99.83 mol%) via
+# factor normalisation: the Jacobian correction introduces specific negative
+# inter-component correlations that happen to drive u(Hvn) to within 2 × 10⁻⁶
+# of φ/100 at the 25 °C / 0 °C reference condition.
+# (Source: private communication, Erik [WG member], 2026-03-29.)
 ################################################################################
 test_that("Example 3 — full correlation matrix, 25/0 °C", {
   data("example3_ex", envir = environment())
