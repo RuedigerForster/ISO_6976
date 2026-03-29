@@ -19,7 +19,7 @@
 #' ISO 6976:2016 "Natural Gas — Calculation of calorific values, density,
 #' relative density and Wobbe indices from composition".
 #'
-#' @author Rüdiger Forster \email{meticulousmeasurements@@gmail.com}
+#' @author Rüdiger Forster \email{meticulous.measurements@@gmail.com}
 #'
 #' @name ISO6976.2016-package
 #' @aliases ISO6976.2016-package

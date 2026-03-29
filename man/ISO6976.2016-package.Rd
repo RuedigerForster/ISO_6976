@@ -35,5 +35,5 @@ Useful links:
 
 }
 \author{
-Rüdiger Forster \email{meticulousmeasurements@gmail.com}
+Rüdiger Forster \email{meticulous.measurements@gmail.com}
 }
