@@ -5,10 +5,12 @@
 *.Rhistory
 /.RData
 *.Rproj.user
+*.Rproj
 src/*.o
 src/*.so
 src/*.dll
-/ISO6976.2016.Rcheck/
+*.Rcheck/
+..Rcheck/
 *.tar.gz
 *.zip
 
