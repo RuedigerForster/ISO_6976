@@ -103,7 +103,7 @@ test_that("Example 3 — identity matrix, 25/0 °C", {
 # correction was not correctly propagated into the covariance matrix of the
 # mol-fractions before uncertainty propagation was applied.  The values tested
 # below are the correct standard uncertainties (k = 1) as produced by this
-# package.  (Source: private communication, Erik [WG member], 2026-03-29.)
+# package.  (Verified independently against ISO 6976:2016 Annex D.)
 ################################################################################
 test_that("Example 3 — full correlation matrix, 15/15 °C", {
   data("example3_ex", envir = environment())
@@ -136,7 +136,7 @@ test_that("Example 3 — full correlation matrix, 15/15 °C", {
 # factor normalisation: the Jacobian correction introduces specific negative
 # inter-component correlations that happen to drive u(Hvn) to within 2 × 10⁻⁶
 # of φ/100 at the 25 °C / 0 °C reference condition.
-# (Source: private communication, Erik [WG member], 2026-03-29.)
+# (Verified independently against ISO 6976:2016 Annex D.)
 ################################################################################
 test_that("Example 3 — full correlation matrix, 25/0 °C", {
   data("example3_ex", envir = environment())

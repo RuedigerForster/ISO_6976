@@ -9,7 +9,7 @@ including the uncertainty propagation of Annex B.
 ## Installation
 
 ```r
-# From CRAN (once published)
+# From CRAN
 install.packages("ISO6976.2016")
 
 # From GitHub

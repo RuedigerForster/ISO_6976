@@ -13,7 +13,7 @@ in the natural gas industry.
 ## Installation
 
 ```r
-# From CRAN (once published)
+# From CRAN
 install.packages("ISO6976.2016")
 
 # Development version from GitHub
@@ -22,7 +22,6 @@ remotes::install_github("RuedigerForster/ISO_6976")
 
 ## Documentation
 
-- [User Guide](docs/UserGuide.md)
 - `?calculateProperties` — function reference
 - `?GasComponents` — R6 class reference
 
