@@ -22,8 +22,10 @@ Description: Calculates calorific values (gross and net), density, relative
     "Natural Gas — Calculation of calorific values, density, relative density
     and Wobbe indices from composition". Uncertainty propagation follows
     Annex B of that standard.
-License: GPL (>= 3) + file LICENSE
+    Reference: International Organization for Standardization (2016)
+    <https://www.iso.org/standard/55842.html>.
+License: GPL (>= 3)
 URL: https://github.com/RuedigerForster/ISO_6976
 BugReports: https://github.com/RuedigerForster/ISO_6976/issues
-RoxygenNote: 7.3.2
+RoxygenNote: 7.3.3
 VignetteBuilder: knitr

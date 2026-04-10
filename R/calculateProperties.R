@@ -47,7 +47,6 @@
 #' | Wn, u_Wn  | Real-gas net Wobbe index and uncertainty            | MJ/m³      |
 #'
 #' @examples
-#' \dontrun{
 #' data("example1")
 #' res <- calculateProperties(example1$fractionArray, example1$uncertaintyArray,
 #'                            example1$correlationMatrix,
@@ -55,7 +54,6 @@
 #' res$M      # molar mass [kg/kmol]
 #' res$Hvg    # real-gas vol. gross CV [MJ/m^3]
 #' res$u_Wg   # standard uncertainty of gross Wobbe index
-#' }
 #'
 #' @seealso \code{\link{GasComponents}}, \code{\link{componentNames}}
 #' @references ISO 6976:2016 "Natural Gas — Calculation of calorific values,
